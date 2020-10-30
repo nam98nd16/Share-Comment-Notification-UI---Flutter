@@ -34,6 +34,7 @@ class _MyWidgetState extends State<MyWidget> {
   List<dynamic> likedList = [false, false, false, false];
   List<dynamic> starredList = [false, false, false, false];
   List<dynamic> displayingComments = [false, false, false, false];
+  String dropdownValue = "Creator";
 
   var commentSection = Text("This is for comment component");
   var avatarCard = Tooltip(
@@ -240,6 +241,40 @@ class _MyWidgetState extends State<MyWidget> {
     return SingleChildScrollView(
       child: Column(
         children: [
+          Text("Total results: 4"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "SORT BY",
+                style: TextStyle(color: Colors.green),
+              ),
+              Padding(padding: EdgeInsets.only(left: 10)),
+              DropdownButton<String>(
+                value: dropdownValue,
+                icon: Icon(Icons.arrow_downward),
+                iconSize: 24,
+                elevation: 16,
+                style: TextStyle(color: Colors.deepPurple),
+                underline: Container(
+                  height: 2,
+                  color: Colors.deepPurpleAccent,
+                ),
+                onChanged: (String newValue) {
+                  setState(() {
+                    dropdownValue = newValue;
+                  });
+                },
+                items: <String>['Creator', 'Work date', 'Tag']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              )
+            ],
+          ),
           buildCard(context, 0),
           buildCard(context, 1),
           buildCard(context, 2),
