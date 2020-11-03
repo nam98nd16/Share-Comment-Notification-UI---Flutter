@@ -33,7 +33,6 @@ class _MyWidgetState extends State<MyWidget> {
   List<dynamic> branchJudgementList = ["NG", "OK", "NG", "OK"];
   List<dynamic> likedList = [false, false, false, false];
   List<dynamic> starredList = [false, false, false, false];
-  List<dynamic> displayingComments = [false, false, false, false];
   String dropdownValue = "Creator";
 
   var commentSection = Text("This is for comment component");
@@ -41,6 +40,10 @@ class _MyWidgetState extends State<MyWidget> {
       message: "Shared to Nguyễn Văn A",
       child: CircleAvatar(
           radius: 18, backgroundImage: NetworkImage(sharedToImageUrl)));
+  Widget getSharedTile(BuildContext context) => ListTile(
+        leading: avatarCard,
+        title: Text('Nguyễn Phi Lê'),
+      );
   var creatorCard = Tooltip(
       message: "Creator: Nguyễn Văn B",
       child: CircleAvatar(
@@ -49,84 +52,85 @@ class _MyWidgetState extends State<MyWidget> {
   Widget buildCard(BuildContext context, int index) => GestureDetector(
         onTap: () => _navigateToNextScreen(context),
         child: Card(
-          margin: EdgeInsets.all(10),
+          margin: EdgeInsets.symmetric(vertical: 0),
           elevation:
-              3.0, // this field changes the shadow of the card 1.0 is default
+              1.0, // this field changes the shadow of the card 1.0 is default
           shape: RoundedRectangleBorder(
-              side: BorderSide(width: 0.2),
-              borderRadius: BorderRadius.circular(20)),
+              side: BorderSide(width: 0.1), borderRadius: BorderRadius.zero),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Row(
+                      children: [
+                        creatorCard,
+                        Padding(padding: EdgeInsets.only(right: 5)),
+                        Text(
+                          "Nguyễn Văn B",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Padding(padding: EdgeInsets.only(right: 5)),
+                        Tooltip(
+                            message: "Work date & period",
+                            child: Text(
+                              '2020/07/01  11:00 - 12:00',
+                              style: TextStyle(color: Color(0xff657786)),
+                            )),
+                      ],
+                    ),
                     Tooltip(
                         message: "Star",
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: GestureDetector(
-                              onTap: () => setState(() {
-                                    starredList[index] = !starredList[index];
-                                  }),
-                              child: Icon(
-                                Icons.star,
-                                color: starredList[index]
-                                    ? Colors.yellow
-                                    : Colors.black,
-                                size: 35,
-                              )),
-                        )),
-                    creatorCard,
-                    Padding(padding: EdgeInsets.only(right: 5)),
-                    Tooltip(
-                        message: "Work date & period",
-                        child: Text('2020/07/01  11:00 - 12:00')),
+                        child: GestureDetector(
+                            onTap: () => setState(() {
+                                  starredList[index] = !starredList[index];
+                                }),
+                            child: Icon(
+                              starredList[index]
+                                  ? Icons.star
+                                  : Icons.star_border_outlined,
+                              color: starredList[index]
+                                  ? Colors.yellow
+                                  : Colors.black,
+                              size: 30,
+                            ))),
                   ],
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(Icons.credit_card),
+                    Icon(Icons.credit_card_outlined),
                     Tooltip(
                         message: "Company", child: Text('TNHH Company FF 2')),
                   ],
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(Icons.credit_card),
+                    Icon(Icons.credit_card_outlined),
                     Tooltip(
                         message: "Person in charge/Object",
                         child: Text('An Le Ha')),
                   ],
                 ),
+                Tooltip(message: "Visit company type", child: Text('会社新規')),
                 Tooltip(
                   message: "Tag",
-                  child: const DecoratedBox(
-                    decoration: const BoxDecoration(color: Colors.blueAccent),
-                    child: const Text('#営業訪問'),
+                  child: Text(
+                    '#営業訪問',
+                    style: TextStyle(color: Colors.blue),
                   ),
                 ),
-                Tooltip(message: "Visit company type", child: Text('会社新規')),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.share),
-                    avatarCard,
-                    avatarCard,
-                    avatarCard,
-                    avatarCard,
-                    avatarCard,
-                    avatarCard
-                  ],
-                ),
-                Padding(padding: EdgeInsets.only(bottom: 5)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -139,32 +143,14 @@ class _MyWidgetState extends State<MyWidget> {
                                       likedList[index] = !likedList[index];
                                     }),
                                 child: Icon(
-                                  Icons.thumb_up,
+                                  likedList[index]
+                                      ? Icons.thumb_up
+                                      : Icons.thumb_up_alt_outlined,
                                   color: likedList[index]
                                       ? Colors.blue
                                       : Colors.black,
                                 ))),
                       ],
-                    ),
-                    GestureDetector(
-                      onTap: () => showDialog(
-                          context: context,
-                          builder: (_) => new AlertDialog(
-                                title: new Text("Branch manager's comment"),
-                                content: new Text(
-                                    "This is for branch-manager-comment component"),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    child: Text('Close'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  )
-                                ],
-                              )),
-                      child: Tooltip(
-                          message: "Branch manager's comment",
-                          child: Icon(Icons.comment_bank)),
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,49 +173,120 @@ class _MyWidgetState extends State<MyWidget> {
                                     ],
                                   )),
                           child: Tooltip(
-                              message: "Note", child: Icon(Icons.comment)),
+                              message: "Note",
+                              child: Icon(Icons.mode_comment_outlined)),
                         ),
                       ],
                     ),
-                    SizedBox(
-                      width: 40,
-                      child: RaisedButton(
-                        padding: EdgeInsets.all(5),
-                        onPressed: () {
-                          setState(() {
-                            branchJudgementList[index] =
-                                branchJudgementList[index] == "OK" ? "" : "OK";
-                          });
-                        },
-                        child: Text("OK"),
-                        color: branchJudgementList[index] == "OK"
-                            ? Colors.blue
-                            : Colors.white,
-                      ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: RaisedButton(
+                            padding: EdgeInsets.all(0),
+                            onPressed: () {
+                              setState(() {
+                                branchJudgementList[index] =
+                                    branchJudgementList[index] == "OK"
+                                        ? ""
+                                        : "OK";
+                              });
+                            },
+                            child: Text("OK"),
+                            color: branchJudgementList[index] == "OK"
+                                ? Colors.blue
+                                : Colors.white,
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(right: 5)),
+                        SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: RaisedButton(
+                            padding: EdgeInsets.all(0),
+                            onPressed: () {
+                              setState(() {
+                                branchJudgementList[index] =
+                                    branchJudgementList[index] == "NG"
+                                        ? ""
+                                        : "NG";
+                              });
+                            },
+                            child: Text("NG"),
+                            color: branchJudgementList[index] == "NG"
+                                ? Colors.red
+                                : Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      width: 40,
-                      child: RaisedButton(
-                        padding: EdgeInsets.all(5),
-                        onPressed: () {
-                          setState(() {
-                            branchJudgementList[index] =
-                                branchJudgementList[index] == "NG" ? "" : "NG";
-                          });
-                        },
-                        child: Text("NG"),
-                        color: branchJudgementList[index] == "NG"
-                            ? Colors.red
-                            : Colors.white,
-                      ),
+                    GestureDetector(
+                      onTap: () => showDialog(
+                          context: context,
+                          builder: (_) => new AlertDialog(
+                                title: new Text("Branch manager's comment"),
+                                content: new Text(
+                                    "This is for branch-manager-comment component"),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text('Close'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  )
+                                ],
+                              )),
+                      child: Tooltip(
+                          message: "Branch manager's comment",
+                          child: Icon(Icons.comment_bank_outlined)),
                     ),
-                    Tooltip(
-                        message: "Last change",
-                        child: Text('2020/10/06  11:42',
-                            style: TextStyle(fontStyle: FontStyle.italic)))
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("6"),
+                        GestureDetector(
+                            onTap: () => showDialog(
+                                context: context,
+                                builder: (_) => new AlertDialog(
+                                      contentPadding: EdgeInsets.all(0),
+                                      title: new Text("Shared to"),
+                                      content: Container(
+                                        width: 300,
+                                        height: 300,
+                                        child: ListView(children: <Widget>[
+                                          getSharedTile(context),
+                                          getSharedTile(context),
+                                          getSharedTile(context),
+                                          getSharedTile(context),
+                                          getSharedTile(context),
+                                          getSharedTile(context)
+                                        ]),
+                                      ),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          child: Text('Close'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        )
+                                      ],
+                                    )),
+                            child: Icon(Icons.share_outlined)),
+                      ],
+                    ),
                   ],
                 ),
-                displayingComments[index] ? commentSection : Container()
+                Padding(padding: EdgeInsets.only(top: 5)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Tooltip(
+                        message: "Last change",
+                        child: Text('Last change: 2020/10/06  11:42',
+                            style: TextStyle(fontStyle: FontStyle.italic))),
+                  ],
+                )
               ],
             ),
           ),
