@@ -36,7 +36,7 @@ class _MyWidgetState extends State<MyWidget> {
   List<dynamic> likedList = [false, false, false, false];
   List<dynamic> starredList = [false, false, false, false];
   var sortDirection = "ASC";
-  String dropdownValue = "Creator";
+  String dropdownValue = "Creator ascending";
   var _selectedStartDatecontroller = TextEditingController();
   var _selectedEndDatecontroller = TextEditingController();
   var commentSection = Text("This is for comment component");
@@ -88,7 +88,8 @@ class _MyWidgetState extends State<MyWidget> {
 
   Widget buildCard(BuildContext context, int index) => GestureDetector(
         onTap: () => _navigateToNextScreen(context),
-        child: Container(
+        child: Card(
+          elevation: 0.3,
           margin: EdgeInsets.symmetric(vertical: 5),
           child: Padding(
             padding: EdgeInsets.symmetric(
@@ -356,6 +357,8 @@ class _MyWidgetState extends State<MyWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(padding: EdgeInsets.only(right: 10)),
+              Text("Sort by"),
+              Padding(padding: EdgeInsets.only(right: 10)),
               DropdownButton<String>(
                 value: dropdownValue,
                 elevation: 16,
@@ -369,8 +372,14 @@ class _MyWidgetState extends State<MyWidget> {
                     dropdownValue = newValue;
                   });
                 },
-                items: <String>['Creator', 'Work date', 'Tag']
-                    .map<DropdownMenuItem<String>>((String value) {
+                items: <String>[
+                  'Creator ascending',
+                  'Work date ascending',
+                  'Tag ascending',
+                  'Creator descending',
+                  'Work date descending',
+                  'Tag descending'
+                ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -378,21 +387,6 @@ class _MyWidgetState extends State<MyWidget> {
                 }).toList(),
               ),
               Padding(padding: EdgeInsets.only(left: 10)),
-              SizedBox(
-                height: 30,
-                width: 30,
-                child: RaisedButton(
-                  padding: EdgeInsets.all(0),
-                  onPressed: () {
-                    setState(() {
-                      sortDirection = sortDirection == "ASC" ? "DES" : "ASC";
-                    });
-                  },
-                  child: Text(sortDirection),
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                ),
-              ),
             ],
           ),
           Row(
