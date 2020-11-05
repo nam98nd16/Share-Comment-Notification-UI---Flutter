@@ -26,6 +26,8 @@ class MyWidget extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<MyWidget> {
+  static final double horizontalAlignment = 15;
+  static final double verticalAlignment = 10;
   static final creatorImageUrl =
       "https://scontent.fhan3-3.fna.fbcdn.net/v/t1.0-9/29243976_548192018885015_8848872616883126272_n.jpg?_nc_cat=106&ccb=2&_nc_sid=09cbfe&_nc_ohc=QkIdLIZDw8cAX_zKthG&_nc_ht=scontent.fhan3-3.fna&oh=56f986fd9c8c1f9a67268e13cf2f80fb&oe=5FC208CA";
   static final sharedToImageUrl =
@@ -33,8 +35,10 @@ class _MyWidgetState extends State<MyWidget> {
   List<dynamic> branchJudgementList = ["NG", "OK", "NG", "OK"];
   List<dynamic> likedList = [false, false, false, false];
   List<dynamic> starredList = [false, false, false, false];
+  var sortDirection = "ASC";
   String dropdownValue = "Creator";
-
+  var _selectedStartDatecontroller = TextEditingController();
+  var _selectedEndDatecontroller = TextEditingController();
   var commentSection = Text("This is for comment component");
   var avatarCard = Tooltip(
       message: "Shared to Nguyễn Văn A",
@@ -49,16 +53,46 @@ class _MyWidgetState extends State<MyWidget> {
       child: CircleAvatar(
           radius: 18, backgroundImage: NetworkImage(creatorImageUrl)));
 
+  var filteredTag;
+  Widget buildTagButton(BuildContext context, tagName) => RaisedButton(
+      padding: EdgeInsets.all(0),
+      onPressed: () {
+        setState(() {
+          if (filteredTag != tagName)
+            filteredTag = tagName;
+          else
+            filteredTag = null;
+        });
+      },
+      child: Text(tagName),
+      color: filteredTag == tagName ? Colors.blue : Colors.white,
+      textColor: filteredTag == tagName ? Colors.white : Colors.blue);
+
+  DateTime selectedStartDate = DateTime.now();
+  DateTime selectedEndDate = DateTime.now();
+
+  Future<void> _selectDate(
+      BuildContext context, selectedDate, textController) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+        textController.text =
+            picked.toString().substring(0, 10).replaceAll("-", "/");
+      });
+  }
+
   Widget buildCard(BuildContext context, int index) => GestureDetector(
         onTap: () => _navigateToNextScreen(context),
-        child: Card(
-          margin: EdgeInsets.symmetric(vertical: 0),
-          elevation:
-              1.0, // this field changes the shadow of the card 1.0 is default
-          shape: RoundedRectangleBorder(
-              side: BorderSide(width: 0.1), borderRadius: BorderRadius.zero),
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 5),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.symmetric(
+                vertical: 8.0, horizontal: horizontalAlignment),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,17 +104,41 @@ class _MyWidgetState extends State<MyWidget> {
                       children: [
                         creatorCard,
                         Padding(padding: EdgeInsets.only(right: 5)),
-                        Text(
-                          "Nguyễn Văn B",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "Nguyễn Văn B",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                                Padding(padding: EdgeInsets.only(right: 5)),
+                                Tooltip(
+                                    message: "Work date & period",
+                                    child: Text(
+                                      '2020/07/01  11:00 - 12:00',
+                                      style:
+                                          TextStyle(color: Color(0xff657786)),
+                                    )),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Tooltip(
+                                    message: "Last change",
+                                    child: Text(
+                                        'Last change: 2020/10/06  11:42',
+                                        style: TextStyle(
+                                            fontStyle: FontStyle.italic,
+                                            fontSize: 10))),
+                              ],
+                            ),
+                          ],
                         ),
-                        Padding(padding: EdgeInsets.only(right: 5)),
-                        Tooltip(
-                            message: "Work date & period",
-                            child: Text(
-                              '2020/07/01  11:00 - 12:00',
-                              style: TextStyle(color: Color(0xff657786)),
-                            )),
                       ],
                     ),
                     Tooltip(
@@ -100,6 +158,7 @@ class _MyWidgetState extends State<MyWidget> {
                             ))),
                   ],
                 ),
+                Padding(padding: EdgeInsets.only(bottom: 10)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -118,6 +177,7 @@ class _MyWidgetState extends State<MyWidget> {
                   ],
                 ),
                 Tooltip(message: "Visit company type", child: Text('会社新規')),
+                Padding(padding: EdgeInsets.only(bottom: 10)),
                 Tooltip(
                   message: "Tag",
                   child: Text(
@@ -125,17 +185,13 @@ class _MyWidgetState extends State<MyWidget> {
                     style: TextStyle(color: Colors.blue),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [],
-                ),
+                Padding(padding: EdgeInsets.only(bottom: 10)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text("${likedList[index] ? '16' : '15'}"),
                         Tooltip(
                             message: "Like",
                             child: GestureDetector(
@@ -150,12 +206,12 @@ class _MyWidgetState extends State<MyWidget> {
                                       ? Colors.blue
                                       : Colors.black,
                                 ))),
+                        Text("${likedList[index] ? '16' : '15'}"),
                       ],
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text("3"),
                         GestureDetector(
                           onTap: () => showDialog(
                               context: context,
@@ -176,6 +232,7 @@ class _MyWidgetState extends State<MyWidget> {
                               message: "Note",
                               child: Icon(Icons.mode_comment_outlined)),
                         ),
+                        Text("3"),
                       ],
                     ),
                     Row(
@@ -197,6 +254,9 @@ class _MyWidgetState extends State<MyWidget> {
                             color: branchJudgementList[index] == "OK"
                                 ? Colors.blue
                                 : Colors.white,
+                            textColor: branchJudgementList[index] == "OK"
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                         Padding(padding: EdgeInsets.only(right: 5)),
@@ -217,6 +277,9 @@ class _MyWidgetState extends State<MyWidget> {
                             color: branchJudgementList[index] == "NG"
                                 ? Colors.red
                                 : Colors.white,
+                            textColor: branchJudgementList[index] == "NG"
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                       ],
@@ -244,7 +307,6 @@ class _MyWidgetState extends State<MyWidget> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("6"),
                         GestureDetector(
                             onTap: () => showDialog(
                                 context: context,
@@ -273,20 +335,11 @@ class _MyWidgetState extends State<MyWidget> {
                                       ],
                                     )),
                             child: Icon(Icons.share_outlined)),
+                        Text("6"),
                       ],
                     ),
                   ],
                 ),
-                Padding(padding: EdgeInsets.only(top: 5)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Tooltip(
-                        message: "Last change",
-                        child: Text('Last change: 2020/10/06  11:42',
-                            style: TextStyle(fontStyle: FontStyle.italic))),
-                  ],
-                )
               ],
             ),
           ),
@@ -297,20 +350,14 @@ class _MyWidgetState extends State<MyWidget> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Total results: 4"),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                "SORT BY",
-                style: TextStyle(color: Colors.green),
-              ),
-              Padding(padding: EdgeInsets.only(left: 10)),
+              Padding(padding: EdgeInsets.only(right: 10)),
               DropdownButton<String>(
                 value: dropdownValue,
-                icon: Icon(Icons.arrow_downward),
-                iconSize: 24,
                 elevation: 16,
                 style: TextStyle(color: Colors.deepPurple),
                 underline: Container(
@@ -329,7 +376,95 @@ class _MyWidgetState extends State<MyWidget> {
                     child: Text(value),
                   );
                 }).toList(),
+              ),
+              Padding(padding: EdgeInsets.only(left: 10)),
+              SizedBox(
+                height: 30,
+                width: 30,
+                child: RaisedButton(
+                  padding: EdgeInsets.all(0),
+                  onPressed: () {
+                    setState(() {
+                      sortDirection = sortDirection == "ASC" ? "DES" : "ASC";
+                    });
+                  },
+                  child: Text(sortDirection),
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(padding: EdgeInsets.only(right: 10)),
+              Container(
+                width: 200,
+                height: 40,
+                child: TextField(
+                  decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                    border: OutlineInputBorder(),
+                    labelText: 'Creator',
+                  ),
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(right: 5)),
+              Container(
+                width: 110,
+                height: 40,
+                child: TextField(
+                  controller: _selectedStartDatecontroller,
+                  decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                    border: OutlineInputBorder(),
+                    labelText: 'StartDate',
+                  ),
+                  onTap: () => _selectDate(
+                      context, selectedStartDate, _selectedStartDatecontroller),
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(right: 5)),
+              Container(
+                width: 110,
+                height: 40,
+                child: TextField(
+                  controller: _selectedEndDatecontroller,
+                  decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                    border: OutlineInputBorder(),
+                    labelText: 'EndDate',
+                  ),
+                  onTap: () => _selectDate(
+                      context, selectedEndDate, _selectedEndDatecontroller),
+                ),
               )
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: buildTagButton(context, "#対面"),
+              ),
+              buildTagButton(context, "#TEL対応"),
+              buildTagButton(context, "#TV会議"),
+              Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: buildTagButton(context, "#その他")),
+            ],
+          ),
+          Padding(padding: EdgeInsets.only(bottom: 10)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(padding: EdgeInsets.only(right: 10)),
+              Text("Total results: 4"),
             ],
           ),
           buildCard(context, 0),
