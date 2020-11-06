@@ -36,7 +36,7 @@ class _MyWidgetState extends State<MyWidget> {
   List<dynamic> likedList = [false, false, false, false];
   List<dynamic> starredList = [false, false, false, false];
   var sortDirection = "ASC";
-  String dropdownValue = "Creator ascending";
+  String dropdownValue = "Work date descending";
   var _selectedStartDatecontroller = TextEditingController();
   var _selectedEndDatecontroller = TextEditingController();
   var commentSection = Text("This is for comment component");
@@ -374,10 +374,10 @@ class _MyWidgetState extends State<MyWidget> {
                 },
                 items: <String>[
                   'Creator ascending',
-                  'Work date ascending',
-                  'Tag ascending',
                   'Creator descending',
+                  'Work date ascending',
                   'Work date descending',
+                  'Tag ascending',
                   'Tag descending'
                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
